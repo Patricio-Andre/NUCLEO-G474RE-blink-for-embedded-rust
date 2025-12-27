@@ -1,7 +1,12 @@
 [package]
-name = "blink_minimum"
+name = "NUCLEO-G474RE-blink-for-embedded-rust"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "Uma breve descrição do que sua crate faz (obrigatório)"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Patricio-Andre/NUCLEO-G474RE-blink-for-embedded-rust" 
+keywords = ["embedded", "stm32", "blink", "stm32g4", "stm32g474", "stm32g474RE", "simple"]
+categories = ["embedded", "hardware-support"]
 
 [dependencies]
 # Essencial para rodar no metal (Reset handler, stack pointer)
