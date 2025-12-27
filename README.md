@@ -1,1 +1,130 @@
-# NUCLEO-G474RE-blink-for-embbeded-rust
+# blink_minimum — Nucleo G474RE
+
+This repository contains a minimal Rust example that blinks the LED on the
+Nucleo G474RE board. The project is intended as a starting point for
+embedded Rust development on the STM32G4xx family. The repository includes a
+canonical project layout, `Cargo.toml`, `.cargo/config.toml`, a `Makefile`, and
+`memory.x` linker script — common components for embedded Rust projects.
+
+Main contents:
+- `src/main.rs` — embedded application (main loop toggling PA5).
+- `src/utils/` — utilities for the example (configurable logger via features).
+- `memory.x` — linker script (Flash/RAM layout).
+- `Makefile` — convenient targets (`build`, `release`, `embed`, `flash`, `clippy`, ...).
+- `.cargo/config.toml` — build/target configuration.
+
+## Quick overview
+
+The crate is configured for the `thumbv7em-none-eabihf` target and uses the
+`stm32g474` feature of `stm32g4xx-hal`. The logging utilities live in
+`src/utils/logger.rs` and choose a backend based on feature flags (`log-itm`,
+`defmt`, `log-semihost`).
+
+Currently the logger backend may require additional configuration or
+dependencies to work; the example as provided simply blinks the LED.
+
+## Prerequisites
+
+- Rust toolchain (rustup)
+- Add the target:
+
+```bash
+rustup target add thumbv7em-none-eabihf
+```
+
+- Cross toolchain / linker (example for Debian/Ubuntu):
+
+```bash
+sudo apt update
+sudo apt install gcc-arm-none-eabi binutils-arm-none-eabi
+```
+
+- Flashing / debug tools (choose one or more):
+
+```bash
+cargo install probe-run       # runner for `cargo run`
+cargo install cargo-flash      # cargo-flash
+cargo install cargo-embed      # cargo-embed (optional, supports many boards)
+```
+
+## Notes about `.cargo/config.toml`
+
+This project includes `.cargo/config.toml` with `target = "thumbv7em-none-eabihf"`.
+It also contains a `rustflags` entry:
+
+```toml
+[target.thumbv7em-none-eabihf]
+rustflags = ["-C", "link-arg=-Tlink.x"]
+
+[build]
+target = "thumbv7em-none-eabihf"
+```
+
+Important: the provided linker script is named `memory.x`. If you want to
+keep that name, change the flag to `-Tmemory.x` or rename `memory.x` to
+`link.x`.
+
+## Local build
+
+Debug build:
+
+```bash
+cargo build --target thumbv7em-none-eabihf
+```
+
+Release build (optimized):
+
+```bash
+cargo build --release --target thumbv7em-none-eabihf
+```
+
+Or use the `Makefile`:
+
+```bash
+make build        # debug
+make release      # release
+```
+
+Using the `Makefile` is convenient but you should understand the underlying
+commands.
+
+## Flash / Run on Nucleo G474RE
+
+If `probe-run` / `probe-rs` can automatically detect the chip:
+
+```bash
+probe-run target/thumbv7em-none-eabihf/release/blink_minimum
+```
+
+If automatic detection fails, specify the chip explicitly:
+
+```bash
+probe-run --chip STM32G474RE target/thumbv7em-none-eabihf/release/blink_minimum
+# or
+cargo-flash --chip STM32G474RE --target thumbv7em-none-eabihf --release
+# or (with cargo-embed)
+cargo embed --chip STM32G474RE --release
+```
+
+Convenient `Makefile` targets:
+
+```bash
+make embed    # runs `cargo embed --chip STM32G474RE --release`
+make flash    # runs `cargo-flash --chip STM32G474RE --target ... --release`
+make run      # runs `cargo run --release` with runner configured
+```
+
+## Logging / features
+
+- To use ITM / `cortex-m-log`, enable the `log-itm` feature and add the
+  compatible dependencies (see `src/utils/logger.rs`).
+- To use `defmt`, enable the `defmt` feature and add `defmt-rtt` / `panic-probe`
+  as needed.
+
+Example to build with `log-itm`:
+
+```bash
+cargo build --release --target thumbv7em-none-eabihf --features log-itm
+```
+
+

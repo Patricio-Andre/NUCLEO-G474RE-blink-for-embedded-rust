@@ -3,14 +3,6 @@ name = "blink_minimum"
 version = "0.1.0"
 edition = "2024"
 
-[target.thumbv7em-none-eabihf]
-rustflags = [
-  "-C", "link-arg=-Tlink.x", # <--- ESSA LINHA É CRUCIAL
-]
-
-[build]
-target = "thumbv7em-none-eabihf"
-
 [dependencies]
 # Essencial para rodar no metal (Reset handler, stack pointer)
 cortex-m = "0.7"

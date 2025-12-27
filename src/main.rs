@@ -65,7 +65,7 @@ fn main() -> ! {
 
         // Pequeno delay ativo: laço vazio para criar tempo visível.
         for _ in 0..10_000_000 {
-            led.set_low().expect("deu errado o led low");
+            led.set_low().expect("set low gone wrong");
         }
 
         // Agora registamos que vamos colocar o LED em nível alto.
@@ -73,7 +73,7 @@ fn main() -> ! {
 
         // Outro delay ativo para manter o LED no estado alto por um tempo.
         for _ in 0..10_000_000 {
-            led.set_high().expect("deu errado o led low");
+            led.set_high().expect("set high gone wrong");
         }
     }
 }
